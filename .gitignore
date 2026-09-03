@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment files
+.env
+*.env
+*/.env
+
+# Uploads / media
+server/uploads/
+
+# Build artifacts
+dist/
+dist-ssr/
+
+# System files
+.DS_Store
