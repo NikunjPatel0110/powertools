@@ -1,4 +1,5 @@
-const API = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = `${API_BASE}/api`;
 
 export const getToken = () => localStorage.getItem('admin_token');
 const authHeaders = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` });
