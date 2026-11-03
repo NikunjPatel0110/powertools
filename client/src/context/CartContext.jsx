@@ -2,11 +2,11 @@ import { createContext, useContext, useReducer, useEffect } from 'react'
 
 const CartContext = createContext()
 
-const STORAGE_KEY = 'industrialdirect_cart'
+const STORAGE_KEY = 'akmultitools_cart'
 
 function loadCart() {
   try {
-    const data = localStorage.getItem(STORAGE_KEY)
+    const data = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('industrialdirect_cart')
     return data ? JSON.parse(data) : []
   } catch { return [] }
 }

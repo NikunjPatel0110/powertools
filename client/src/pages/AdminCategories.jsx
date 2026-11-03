@@ -23,10 +23,8 @@ export default function AdminCategories() {
   const handleNameChange = (e) => {
     const name = e.target.value
     setForm(prev => {
-      // Auto-generate slug if it's empty or was previously auto-generated from the previous name
       const prevExpectedSlug = prev.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
       const newSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      
       const shouldUpdateSlug = prev.slug === '' || prev.slug === prevExpectedSlug
 
       return {
@@ -80,8 +78,6 @@ export default function AdminCategories() {
       }
       resetForm()
       loadData()
-      
-      // Clear success message after 3s
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
       setError(err.message || 'An error occurred while saving the category.')
@@ -106,13 +102,14 @@ export default function AdminCategories() {
       <main className="admin-main">
         <h2 className="headline-lg" style={{ marginBottom: 24 }}>Category Management</h2>
 
-        <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
-          {/* LEFT PANEL */}
-          <div style={{ flex: '0 0 350px', background: 'var(--surface)', padding: 24, border: '1px solid var(--black)' }}>
+        {/* Responsive flex layout: stacked below lg, side-by-side on lg+ */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start w-full">
+          {/* Form Panel: Full width on mobile/tablet, 350px on lg+ */}
+          <div className="w-full lg:w-[350px] lg:flex-none" style={{ background: 'var(--surface)', padding: 20, border: '1px solid var(--black)' }}>
             <h3 className="headline-md" style={{ marginBottom: 16 }}>
               {editing ? 'Edit Category' : 'Add New Category'}
             </h3>
-            
+
             {error && <div style={{ color: 'var(--error)', marginBottom: 16, fontSize: 14 }}>{error}</div>}
             {success && <div style={{ color: 'var(--primary)', marginBottom: 16, fontSize: 14 }}>{success}</div>}
 
@@ -121,34 +118,38 @@ export default function AdminCategories() {
                 <label>Category Name *</label>
                 <input required value={form.name} onChange={handleNameChange} placeholder="e.g., Power Drills" />
               </div>
-              
+
               <div className="form-group">
                 <label>Slug *</label>
                 <input required value={form.slug} onChange={handleSlugChange} placeholder="power-drills" />
               </div>
-              
+
               <div className="form-group">
                 <label>Icon Name</label>
-                <input value={form.icon} onChange={e => setForm({...form, icon: e.target.value})} placeholder="e.g., power" />
+                <input value={form.icon} onChange={e => setForm({ ...form, icon: e.target.value })} placeholder="e.g., power" />
                 <span className="body-sm" style={{ color: 'var(--secondary)', display: 'block', marginTop: 4 }}>
                   Material Symbols icon name
                 </span>
               </div>
-              
+
               <div className="form-group">
                 <label>Description</label>
-                <textarea rows={3} value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
+                <textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
               </div>
 
-              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-                <button type="submit" className="btn-primary" style={{ flex: 1, padding: '12px' }}>{editing ? 'Update' : 'Save'}</button>
-                <button type="button" className="btn-ghost" style={{ flex: 1, padding: '12px' }} onClick={resetForm}>Cancel</button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: 20 }}>
+                <button type="submit" className="btn-primary" style={{ minHeight: 44, width: '100%' }}>
+                  {editing ? 'Update' : 'Save'}
+                </button>
+                <button type="button" className="btn-ghost" style={{ minHeight: 44, width: '100%' }} onClick={resetForm}>
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
 
-          {/* RIGHT PANEL */}
-          <div style={{ flex: 1, overflowX: 'auto' }}>
+          {/* Table Panel: Wrapped in overflow-x-auto */}
+          <div className="w-full overflow-x-auto" style={{ border: '1px solid var(--outline-variant)', background: '#fff' }}>
             <table className="admin-table">
               <thead>
                 <tr>
@@ -171,15 +172,29 @@ export default function AdminCategories() {
                     <td className="data-mono">{cat.slug}</td>
                     <td>{cat.description || '—'}</td>
                     <td>
-                      <button className="label-bold" style={{ color: 'var(--primary)', background: 'none', marginRight: 12 }} onClick={() => openEdit(cat)}>Edit</button>
-                      <button className="label-bold" style={{ color: 'var(--error)', background: 'none' }} onClick={() => handleDelete(cat._id)}>Delete</button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <button
+                          className="label-bold"
+                          style={{ color: 'var(--primary)', background: 'none', minHeight: 44, padding: '8px 4px', cursor: 'pointer' }}
+                          onClick={() => openEdit(cat)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="label-bold"
+                          style={{ color: 'var(--error)', background: 'none', minHeight: 44, padding: '8px 4px', cursor: 'pointer' }}
+                          onClick={() => handleDelete(cat._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {categories.length === 0 && (
                   <tr>
                     <td colSpan={5} style={{ color: 'var(--secondary)', textAlign: 'center', padding: 32 }}>
-                      No categories yet. Create your first category on the left.
+                      No categories yet. Create your first category above.
                     </td>
                   </tr>
                 )}

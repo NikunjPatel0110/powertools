@@ -2,24 +2,41 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  const secret = process.env.JWT_SECRET;
+  if (!secret || typeof secret !== 'string' || secret.trim().length < 32) {
+    throw new Error('JWT_SECRET must be configured in environment variables and be at least 32 characters');
+  }
+  return jwt.sign({ id }, secret.trim(), { expiresIn: '2h' });
 };
 
-const loginAdmin = async (req, res) => {
-  const { username, password } = req.body;
+const loginAdmin = async (req, res, next) => {
   try {
-    let admin = await Admin.findOne({ username });
-    if (!admin && username === 'admin') {
-      admin = await Admin.create({ username, password });
+    const { username, password } = req.body || {};
+
+    if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-    if (admin && (await admin.matchPassword(password))) {
-      res.json({ _id: admin._id, username: admin.username, token: generateToken(admin._id) });
-    } else {
-      res.status(401).json({ message: 'Invalid username or password' });
+
+    const trimmedUsername = username.trim();
+    const admin = await Admin.findOne({ username: trimmedUsername });
+
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    const isMatch = await admin.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    return res.json({
+      _id: admin._id,
+      username: admin.username,
+      token: generateToken(admin._id),
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-module.exports = { loginAdmin };
+module.exports = { loginAdmin, generateToken };

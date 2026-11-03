@@ -10,7 +10,12 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max
+  },
+});
 
 const uploadImage = (req, res) => {
   if (req.file) {
@@ -18,7 +23,7 @@ const uploadImage = (req, res) => {
     res.json({
       message: 'Image Uploaded',
       secure_url,
-      url: secure_url
+      url: secure_url,
     });
   } else {
     res.status(400).json({ message: 'No file uploaded' });

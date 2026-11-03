@@ -19,7 +19,9 @@ export default function AdminLogin() {
       } else {
         setError(data.message || 'Login failed')
       }
-    } catch { setError('Connection error') }
+    } catch {
+      setError('Connection error')
+    }
   }
 
   return (
@@ -31,13 +33,32 @@ export default function AdminLogin() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Username</label>
-            <input required value={username} onChange={e => setUsername(e.target.value)} placeholder="admin" />
+            <input
+              required
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="admin"
+              autoComplete="username"
+            />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input required type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+            <input
+              required
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+            />
           </div>
-          <button type="submit" className="btn-primary" style={{width:'100%',textAlign:'center',marginTop:8}}>Sign In</button>
+          <button
+            type="submit"
+            className="btn-primary"
+            style={{ width: '100%', minHeight: 44, textAlign: 'center', marginTop: 12 }}
+          >
+            Sign In
+          </button>
         </form>
       </div>
     </div>

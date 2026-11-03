@@ -1,21 +1,21 @@
 const Enquiry = require('../models/Enquiry');
 
-const getEnquiries = async (req, res) => {
+const getEnquiries = async (req, res, next) => {
   try {
     const enquiries = await Enquiry.find({}).populate('product');
     res.json(enquiries);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const createEnquiry = async (req, res) => {
+const createEnquiry = async (req, res, next) => {
   try {
     const enquiry = new Enquiry(req.body);
     const createdEnquiry = await enquiry.save();
     res.status(201).json(createdEnquiry);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
