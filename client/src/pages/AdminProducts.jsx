@@ -7,6 +7,7 @@ export default function AdminProducts() {
   const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
+  const [catsLoading, setCatsLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ name:'', slug:'', description:'', category:'', brand:'', pricing_type:'fixed', price:'', stock:'', featured:false })
@@ -23,7 +24,11 @@ export default function AdminProducts() {
   }
 
   const openAdd = () => {
-    api.getCategories().then(setCategories).catch(console.error)
+    setCatsLoading(true)
+    api.getCategories()
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]))
+      .finally(() => setCatsLoading(false))
     setEditing(null)
     setForm({ name:'', slug:'', description:'', category:'', brand:'', pricing_type:'fixed', price:'', stock:'', featured:false })
     setImageFile(null)
@@ -31,7 +36,11 @@ export default function AdminProducts() {
   }
 
   const openEdit = (p) => {
-    api.getCategories().then(setCategories).catch(console.error)
+    setCatsLoading(true)
+    api.getCategories()
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]))
+      .finally(() => setCatsLoading(false))
     setEditing(p._id)
     setForm({
       name: p.name,
@@ -164,14 +173,22 @@ export default function AdminProducts() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-group">
                     <label>Category</label>
-                    <select
-                      value={form.category}
-                      onChange={e => setForm({ ...form, category: e.target.value })}
-                      required
-                    >
-                      <option value="">Select...</option>
-                      {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                    </select>
+                    {catsLoading ? (
+                      <p className="body-sm" style={{ color: 'var(--secondary)', padding: '10px 0' }}>Loading categories…</p>
+                    ) : categories.length === 0 ? (
+                      <p className="body-sm" style={{ color: 'var(--error)', padding: '10px 0' }}>
+                        No categories yet. Add one in Categories first.
+                      </p>
+                    ) : (
+                      <select
+                        value={form.category}
+                        onChange={e => setForm({ ...form, category: e.target.value })}
+                        required
+                      >
+                        <option value="">Select...</option>
+                        {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                      </select>
+                    )}
                   </div>
                   <div className="form-group">
                     <label>Brand</label>
@@ -239,9 +256,13 @@ export default function AdminProducts() {
                   <label htmlFor="featured" style={{ margin: 0, cursor: 'pointer' }}>Featured Product</label>
                 </div>
 
-                {/* Form buttons - at least 44px tall */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: 16 }}>
-                  <button type="submit" className="btn-primary" style={{ width: '100%', minHeight: 44 }}>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ width: '100%', minHeight: 44 }}
+                    disabled={catsLoading || categories.length === 0}
+                  >
                     {editing ? 'Update' : 'Create'} Product
                   </button>
                   <button type="button" className="btn-ghost" style={{ width: '100%', minHeight: 44 }} onClick={() => setShowModal(false)}>

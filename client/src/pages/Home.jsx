@@ -5,15 +5,16 @@ import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
 import { api } from '../api'
 
-const CATEGORY_ICONS = ['construction','precision_manufacturing','handyman','hardware','carpenter','home_repair_service','engineering','plumbing','electrical_services','measuring_tape']
-
 export default function Home() {
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
+  const [catsLoaded, setCatsLoaded] = useState(false)
 
   useEffect(() => {
     api.getProducts().then(setProducts).catch(console.error)
-    api.getCategories().then(setCategories).catch(console.error)
+    api.getCategories()
+      .then(data => { setCategories(Array.isArray(data) ? data : []); setCatsLoaded(true) })
+      .catch(() => setCatsLoaded(true))
   }, [])
 
   return (
@@ -31,26 +32,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Categories */}
-        <section style={{ marginBottom: 40 }}>
-          <div className="section-header">
-            <h2 className="headline-lg">Categories</h2>
-            <Link to="/products" className="label-bold" style={{ color: 'var(--primary)', minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>View All</Link>
-          </div>
-          <div className="grid-5">
-            {categories.length > 0 ? categories.slice(0, 10).map((cat, i) => (
-              <Link to={`/products?category=${cat._id}`} className="category-card" key={cat._id}>
-                <span className="material-symbols-outlined">{cat.icon || CATEGORY_ICONS[i % CATEGORY_ICONS.length]}</span>
-                <h3 className="label-bold">{cat.name}</h3>
-              </Link>
-            )) : CATEGORY_ICONS.map((icon, i) => (
-              <div className="category-card" key={i}>
-                <span className="material-symbols-outlined">{icon}</span>
-                <h3 className="label-bold">{['Power Drills','Grinders','Hand Tools','Fasteners','Saws','Tool Storage','Safety Gear','Plumbing','Electrical','Measurement'][i]}</h3>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Categories — only shown when API returns at least one category */}
+        {catsLoaded && categories.length > 0 && (
+          <section style={{ marginBottom: 40 }}>
+            <div className="section-header">
+              <h2 className="headline-lg">Categories</h2>
+              <Link to="/products" className="label-bold" style={{ color: 'var(--primary)', minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>View All</Link>
+            </div>
+            <div className="grid-5">
+              {categories.slice(0, 10).map(cat => (
+                <Link to={`/products?category=${cat._id}`} className="category-card" key={cat._id}>
+                  <span className="material-symbols-outlined">{cat.icon || 'category'}</span>
+                  <h3 className="label-bold">{cat.name}</h3>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Popular Products */}
         <section style={{ marginBottom: 40 }}>
