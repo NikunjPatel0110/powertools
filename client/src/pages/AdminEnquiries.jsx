@@ -9,9 +9,21 @@ export default function AdminEnquiries() {
 
   useEffect(() => {
     if (!getToken()) { navigate('/admin/login'); return }
-    api.getEnquiries().then(d => Array.isArray(d) ? setEnquiries(d) : setEnquiries([])).catch(() => {})
+    api.getEnquiries().then(d => Array.isArray(d) ? setEnquiries(d) : setEnquiries([])).catch(() => { })
   }, [])
 
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this enquiry? This cannot be undone.')) return
+
+    try {
+      await api.deleteEnquiry(id)
+      setEnquiries(prev => prev.filter(e => e._id !== id))
+    } catch (err) {
+      alert('Could not delete the enquiry. Please try again.')
+    }
+  }
+  //------------------
   return (
     <div className="admin-layout">
       <AdminSidebar active="enquiries" />
@@ -28,6 +40,7 @@ export default function AdminEnquiries() {
                 <th>Message</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -40,11 +53,21 @@ export default function AdminEnquiries() {
                   <td style={{ minWidth: 160, maxWidth: 280, wordBreak: 'break-word' }}>{e.message}</td>
                   <td><span className="label-bold" style={{ color: e.status === 'new' ? 'var(--primary)' : 'var(--secondary)' }}>{e.status}</span></td>
                   <td className="data-mono">{new Date(e.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      style={{ minHeight: 44, color: 'var(--primary)' }}
+                      onClick={() => handleDelete(e._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
               {enquiries.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ color: 'var(--secondary)', textAlign: 'center', padding: 24 }}>
+                  <td colSpan={8} style={{ color: 'var(--secondary)', textAlign: 'center', padding: 24 }}>
                     No enquiries yet.
                   </td>
                 </tr>

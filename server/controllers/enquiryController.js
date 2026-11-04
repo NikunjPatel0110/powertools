@@ -18,5 +18,15 @@ const createEnquiry = async (req, res, next) => {
     next(error);
   }
 };
-
-module.exports = { getEnquiries, createEnquiry };
+//------------------
+const deleteEnquiry = async (req, res, next) => {
+  try {
+    const enquiry = await Enquiry.findByIdAndDelete(req.params.id);
+    if (!enquiry) return res.status(404).json({ message: 'Enquiry not found' });
+    res.json({ message: 'Enquiry deleted' });
+  } catch (err) {
+    next(err);
+  }
+};
+//------------------
+module.exports = { getEnquiries, createEnquiry, deleteEnquiry };

@@ -18,7 +18,8 @@ export const api = {
 
   getEnquiries: () => fetch(`${API}/enquiries`, { headers: authHeaders() }).then(r => r.json()),
   createEnquiry: (data) => fetch(`${API}/enquiries`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json()),
-
+  deleteEnquiry: (id) => fetch(`${API}/enquiries/${id}`, { method: 'DELETE', headers: authHeaders() }).then(r => r.json()),
+  //------------------
   login: (data) => fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json()),
 
   uploadImage: (file) => {
