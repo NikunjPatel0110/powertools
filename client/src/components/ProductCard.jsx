@@ -50,9 +50,9 @@ export default function ProductCard({ product }) {
               Add to Cart
             </button>
           ) : (
-            <button type="button" className="btn-ghost" style={{ width: '100%', minHeight: 44, textAlign: 'center' }} onClick={e => e.preventDefault()}>
+            <span className="btn-ghost" style={{ width: '100%', minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               Enquire Now
-            </button>
+            </span>
           )}
         </div>
       </Link>
