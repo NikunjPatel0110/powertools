@@ -34,8 +34,6 @@ export default function Navbar() {
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </Link>
 
-          {/* Admin Login - ONLY on desktop (hidden below md, never in mobile menu) */}
-          <Link to="/admin/login" className="btn-secondary hidden md:inline-flex">Admin Login</Link>
 
           {/* Mobile Hamburger Button - below md */}
           <button
