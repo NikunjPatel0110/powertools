@@ -51,15 +51,20 @@ export default function Home() {
         )}
 
         {/* Popular Products */}
-        <section style={{ marginBottom: 40 }}>
-          <div className="section-header">
-            <h2 className="headline-lg">Popular Equipment</h2>
-          </div>
-          <div className="grid-4">
-            {products.slice(0, 4).map(p => <ProductCard product={p} key={p._id} />)}
-            {products.length === 0 && <p className="body-sm" style={{ color: 'var(--secondary)', gridColumn: '1/-1' }}>No products found. Add products from the admin panel.</p>}
-          </div>
-        </section>
+        {(() => {
+          const featured = products.filter(p => p.featured).slice(0, 4)
+          if (featured.length === 0) return null
+          return (
+            <section style={{ marginBottom: 40 }}>
+              <div className="section-header">
+                <h2 className="headline-lg">Popular Equipment</h2>
+              </div>
+              <div className="grid-4">
+                {featured.map(p => <ProductCard product={p} key={p._id} />)}
+              </div>
+            </section>
+          )
+        })()}
       </main>
       <Footer />
     </>
